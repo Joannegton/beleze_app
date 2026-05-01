@@ -17,10 +17,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required AuthRepository authRepository,
     required LoginUseCase loginUseCase,
     required RegisterUseCase registerUseCase,
-  })  : _authRepository = authRepository,
-        _loginUseCase = loginUseCase,
-        _registerUseCase = registerUseCase,
-        super(const AuthInitial()) {
+  }) : _authRepository = authRepository,
+       _loginUseCase = loginUseCase,
+       _registerUseCase = registerUseCase,
+       super(const AuthInitial()) {
     on<AuthCheckSessionRequested>(_onCheckSession);
     on<AuthLoginRequested>(_onLogin);
     on<AuthRegisterRequested>(_onRegister);
@@ -43,31 +43,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthLoginRequested event,
     Emitter<AuthState> emit,
   ) async {
-    developer.log('[AuthBloc] Login iniciado para email: ${event.email}');
     emit(const AuthLoading());
 
     final result = await _loginUseCase(
       LoginParams(email: event.email, password: event.password),
     );
 
-    developer.log('[AuthBloc] Login resultado - isFailure: ${result.isFailure}');
-
     if (result.isFailure) {
       final errorMsg = result.error.message;
-      developer.log('[AuthBloc] Login falhou: $errorMsg', error: result.error);
       emit(AuthFailure(errorMsg));
       return;
     }
 
-    developer.log('[AuthBloc] Login sucesso, buscando sessão armazenada');
     final session = await _authRepository.getStoredSession();
     session.fold(
       (_) {
-        developer.log('[AuthBloc] Erro ao recuperar sessão');
         emit(const AuthUnauthenticated());
       },
       (s) {
-        developer.log('[AuthBloc] Sessão recuperada: ${s.email}');
         emit(AuthAuthenticated(s));
       },
     );

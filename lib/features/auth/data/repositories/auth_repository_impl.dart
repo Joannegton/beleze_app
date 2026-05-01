@@ -21,21 +21,12 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
-      developer.log('[AuthRepositoryImpl] Iniciando login para email: $email');
       final tokens = await _datasource.login(email: email, password: password);
-      developer.log('[AuthRepositoryImpl] Tokens recebidos, salvando sessão');
       await _saveSession(tokens);
-      developer.log('[AuthRepositoryImpl] Sessão salva com sucesso');
       return ok(tokens);
     } on DioException catch (e) {
-      developer.log(
-        '[AuthRepositoryImpl] Erro DioException: ${e.message}',
-        error: e,
-        stackTrace: e.stackTrace,
-      );
       return err(_mapDioError(e));
     } catch (e) {
-      developer.log('[AuthRepositoryImpl] Erro inesperado', error: e);
       rethrow;
     }
   }
@@ -80,12 +71,16 @@ class AuthRepositoryImpl implements AuthRepository {
       final payload = _decodeJwt(token);
       if (payload == null) return err(const UnauthorizedFailure());
 
-      return ok(UserSession(
-        userId: payload['sub'] as String,
-        email: payload['email'] as String,
-        role: UserRoleExtension.fromString(payload['role'] as String? ?? 'CLIENT'),
-        tenantId: payload['tenant_id'] as String?,
-      ));
+      return ok(
+        UserSession(
+          userId: payload['sub'] as String,
+          email: payload['email'] as String,
+          role: UserRoleExtension.fromString(
+            payload['role'] as String? ?? 'CLIENT',
+          ),
+          tenantId: payload['tenant_id'] as String?,
+        ),
+      );
     } catch (_) {
       return err(const UnauthorizedFailure());
     }
@@ -102,7 +97,9 @@ class AuthRepositoryImpl implements AuthRepository {
     final exp = payload['exp'] as int?;
     if (exp == null) return false;
 
-    return DateTime.fromMillisecondsSinceEpoch(exp * 1000).isAfter(DateTime.now());
+    return DateTime.fromMillisecondsSinceEpoch(
+      exp * 1000,
+    ).isAfter(DateTime.now());
   }
 
   Future<void> _saveSession(AuthTokens tokens) async {

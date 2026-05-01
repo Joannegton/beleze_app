@@ -31,10 +31,12 @@ class _LoginPageState extends State<LoginPage> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    context.read<AuthBloc>().add(AuthLoginRequested(
-          email: _emailController.text,
-          password: _passwordController.text,
-        ));
+    context.read<AuthBloc>().add(
+      AuthLoginRequested(
+        email: _emailController.text,
+        password: _passwordController.text,
+      ),
+    );
   }
 
   @override
@@ -87,7 +89,9 @@ class _LoginPageState extends State<LoginPage> {
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       validator: (v) {
-                        if (v == null || v.trim().isEmpty) return 'E-mail obrigatório';
+                        if (v == null || v.trim().isEmpty) {
+                          return 'E-mail obrigatório';
+                        }
                         if (!v.contains('@')) return 'E-mail inválido';
                         return null;
                       },
@@ -128,32 +132,29 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    Center(
-                      child: Text.rich(
-                        TextSpan(
-                          text: 'Não tem uma conta? ',
+                    Column(
+                      children: [
+                        Text(
+                          'Não tem uma conta?',
                           style: GoogleFonts.manrope(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
                             color: AppColors.onSurfaceVariant,
                           ),
-                          children: [
-                            WidgetSpan(
-                              child: TextButton(
-                                onPressed: () => context.go('/register'),
-                                child: Text(
-                                  'Cadastre-se',
-                                  style: GoogleFonts.manrope(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.primaryContainer,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                          textAlign: TextAlign.center,
                         ),
-                      ),
+                        TextButton(
+                          onPressed: () => context.go('/register'),
+                          child: Text(
+                            'Cadastre-se',
+                            style: GoogleFonts.manrope(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primaryContainer,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
