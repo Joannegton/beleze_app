@@ -46,40 +46,37 @@ class _ClientHomePageState extends State<ClientHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(80),
-        child: AppBar(
-          backgroundColor: Colors.black,
-          elevation: 0,
-          centerTitle: false,
-          title: Text(
-            'BELEZE',
-            style: GoogleFonts.manrope(
-              fontSize: 24,
-              fontWeight: FontWeight.w900,
-              color: AppColors.primaryContainer,
-              letterSpacing: 0.2,
-            ),
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        centerTitle: false,
+        title: Text(
+          'BELEZE',
+          style: GoogleFonts.manrope(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: AppColors.primaryContainer,
+            letterSpacing: 0.2,
           ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: GestureDetector(
-                onTap: () => context.go('/client/profile'),
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.primaryContainer),
-                    color: AppColors.surfaceContainerHigh,
-                  ),
-                  child: Icon(Icons.person, color: AppColors.primaryContainer),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: GestureDetector(
+              onTap: () => context.go('/client/profile'),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.primaryContainer),
+                  color: AppColors.surfaceContainerHigh,
                 ),
+                child: Icon(Icons.person, color: AppColors.primaryContainer),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       body: BlocBuilder<SalonListBloc, SalonListState>(
         builder: (context, state) {
@@ -106,72 +103,62 @@ class _ClientHomePageState extends State<ClientHomePage> {
                         slivers: [
                           SliverToBoxAdapter(
                             child: Padding(
-                              padding: const EdgeInsets.only(
-                                top: 16,
-                                bottom: 24,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 12,
                               ),
-                              child: BannerCarousel(
-                                banners: [
-                                  'assets/banners/Generated Image May 01, 2026 - 2_39AM.jpg',
-                                  'assets/banners/Generated Image May 01, 2026 - 2_41AM.jpg',
-                                  'assets/banners/Generated Image May 01, 2026 - 2_46AM.jpg',
-                                  'assets/banners/ChatGPT Image 1 de mai. de 2026, 02_46_26.png',
-                                  'assets/banners/ChatGPT Image 1 de mai. de 2026, 02_48_10.png',
-                                ],
+                              child: TextField(
+                                style: TextStyle(color: AppColors.onSurface),
+                                decoration: InputDecoration(
+                                  hintText: 'Buscar serviços ou salões...',
+                                  hintStyle: TextStyle(
+                                    color: AppColors.onSurfaceVariant,
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.search,
+                                    color: AppColors.primaryContainer,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(
+                                      color: AppColors.outlineVariant,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(
+                                      color: AppColors.outlineVariant,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(
+                                      color: AppColors.primaryContainer,
+                                      width: 2,
+                                    ),
+                                  ),
+                                ),
                               ),
+                            ),
+                          ),
+                          SliverToBoxAdapter(
+                            child: BannerCarousel(
+                              banners: [
+                                'assets/banners/localizacaoSaloes.png',
+                                'assets/banners/renoveSuaBeleza.png',
+                                'assets/banners/salaoPro.jpg',
+                              ],
                             ),
                           ),
                           SliverToBoxAdapter(
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
+                                vertical: 16,
                                 horizontal: 20,
-                                vertical: 24,
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    'O que você quer fazer hoje?',
-                                    style: GoogleFonts.manrope(
-                                      fontSize: 32,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColors.onSurface,
-                                      height: 1.2,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  TextField(
-                                    style: TextStyle(
-                                      color: AppColors.onSurface,
-                                    ),
-                                    decoration: InputDecoration(
-                                      hintText: 'Buscar serviços ou salões...',
-                                      hintStyle: TextStyle(
-                                        color: AppColors.onSurfaceVariant,
-                                      ),
-                                      prefixIcon: Icon(
-                                        Icons.search,
-                                        color: AppColors.primaryContainer,
-                                      ),
-                                      border: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: AppColors.outlineVariant,
-                                        ),
-                                      ),
-                                      enabledBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: AppColors.outlineVariant,
-                                        ),
-                                      ),
-                                      focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: AppColors.primaryContainer,
-                                          width: 2,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 24),
                                   Text(
                                     'Categorias',
                                     style: GoogleFonts.manrope(
@@ -202,8 +189,8 @@ class _ClientHomePageState extends State<ClientHomePage> {
                                             child: Column(
                                               children: [
                                                 Container(
-                                                  width: 60,
-                                                  height: 60,
+                                                  width: 50,
+                                                  height: 50,
                                                   decoration: BoxDecoration(
                                                     shape: BoxShape.circle,
                                                     border: Border.all(
@@ -226,7 +213,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                                                               .primaryContainer
                                                         : AppColors
                                                               .onSurfaceVariant,
-                                                    size: 28,
+                                                    size: 24,
                                                   ),
                                                 ),
                                                 const SizedBox(height: 8),
@@ -250,42 +237,47 @@ class _ClientHomePageState extends State<ClientHomePage> {
                                       }).toList(),
                                     ),
                                   ),
-                                  const SizedBox(height: 24),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'Próximos a você',
-                                        style: GoogleFonts.manrope(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                          color: AppColors.onSurface,
-                                        ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                left: 20,
+                                right: 20,
+                                bottom: 10,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Próximos a você',
+                                    style: GoogleFonts.manrope(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.onSurface,
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {},
+                                    child: Text(
+                                      'Ver todos',
+                                      style: GoogleFonts.manrope(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.primaryContainer,
+                                        letterSpacing: 0.05,
                                       ),
-                                      TextButton(
-                                        onPressed: () {},
-                                        child: Text(
-                                          'Ver todos',
-                                          style: GoogleFonts.manrope(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.primaryContainer,
-                                            letterSpacing: 0.05,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
                           ),
                           SliverPadding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 12,
-                            ),
+                            padding: const EdgeInsets.only(left: 20, right: 20),
                             sliver: SliverGrid(
                               gridDelegate:
                                   const SliverGridDelegateWithFixedCrossAxisCount(
@@ -304,7 +296,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                               ),
                             ),
                           ),
-                          const SliverToBoxAdapter(child: SizedBox(height: 80)),
+                          const SliverToBoxAdapter(child: SizedBox(height: 16)),
                         ],
                       ),
                     ),
