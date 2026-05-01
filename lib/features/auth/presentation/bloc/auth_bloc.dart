@@ -31,11 +31,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthCheckSessionRequested event,
     Emitter<AuthState> emit,
   ) async {
+    developer.log('🔍 Checking stored session...', name: 'AuthBloc');
     emit(const AuthLoading());
     final result = await _authRepository.getStoredSession();
     result.fold(
-      (_) => emit(const AuthUnauthenticated()),
-      (session) => emit(AuthAuthenticated(session)),
+      (error) {
+        developer.log('❌ No valid session found', name: 'AuthBloc');
+        emit(const AuthUnauthenticated());
+      },
+      (session) {
+        developer.log(
+          '✅ Session found - Role: ${session.role.label} (${session.role.roleIdNum})',
+          name: 'AuthBloc',
+        );
+        emit(AuthAuthenticated(session));
+      },
     );
   }
 
@@ -57,8 +67,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final session = await _authRepository.getStoredSession();
     session.fold(
-      (_) {
-        emit(const AuthUnauthenticated());
+      (error) {
+        emit(
+          const AuthFailure(
+            'Erro ao processar dados de autenticação. Por favor, entre em contato com o suporte.',
+          ),
+        );
       },
       (s) {
         emit(AuthAuthenticated(s));
@@ -70,6 +84,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthRegisterRequested event,
     Emitter<AuthState> emit,
   ) async {
+    developer.log(
+      '📝 Register started - email: ${event.email}, roleIdNum: ${event.roleIdNum}',
+      name: 'AuthBloc',
+    );
     emit(const AuthLoading());
     final result = await _registerUseCase(
       RegisterParams(
@@ -80,14 +98,35 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
 
     if (result.isFailure) {
+      developer.log(
+        '❌ Register failed: ${result.error.message}',
+        name: 'AuthBloc',
+      );
       emit(AuthFailure(result.error.message));
       return;
     }
 
+    developer.log(
+      '✅ Register use case succeeded, retrieving stored session...',
+      name: 'AuthBloc',
+    );
+
     final session = await _authRepository.getStoredSession();
     session.fold(
-      (_) => emit(const AuthUnauthenticated()),
-      (s) => emit(AuthAuthenticated(s)),
+      (error) {
+        developer.log(
+          '❌ Failed to retrieve session after register',
+          name: 'AuthBloc',
+        );
+        emit(const AuthUnauthenticated());
+      },
+      (s) {
+        developer.log(
+          '✅ Register complete - User: ${s.email}, Role: ${s.role.label} (${s.role.roleIdNum})',
+          name: 'AuthBloc',
+        );
+        emit(AuthAuthenticated(s));
+      },
     );
   }
 
@@ -95,7 +134,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthLogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
+    developer.log('🚪 Logout requested', name: 'AuthBloc');
     await _authRepository.logout();
+    developer.log('✅ Logout complete', name: 'AuthBloc');
     emit(const AuthUnauthenticated());
   }
 }

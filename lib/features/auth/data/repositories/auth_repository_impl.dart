@@ -66,22 +66,36 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Result<Failure, UserSession>> getStoredSession() async {
     try {
       final token = await _secureStorage.getAccessToken();
-      if (token == null) return err(const UnauthorizedFailure());
+      if (token == null) {
+        return err(const UnauthorizedFailure());
+      }
 
       final payload = _decodeJwt(token);
-      if (payload == null) return err(const UnauthorizedFailure());
+      if (payload == null) {
+        return err(const UnauthorizedFailure());
+      }
 
-      return ok(
-        UserSession(
-          userId: payload['sub'] as String,
-          email: payload['email'] as String,
-          role: UserRoleExtension.fromString(
-            payload['role'] as String? ?? 'CLIENT',
-          ),
-          tenantId: payload['tenant_id'] as String?,
-        ),
+      final roleIdNum = _extractRoleIdNum(payload);
+
+      if (roleIdNum == null) {
+        return err(const UnauthorizedFailure());
+      }
+
+      final role = UserRole.fromRoleIdNum(roleIdNum);
+
+      var tenantId = payload['tenant_id'] as String?;
+      tenantId ??= await _secureStorage.getTenantId();
+
+      final session = UserSession(
+        userId: payload['sub'] as String,
+        email: payload['email'] as String,
+        role: role,
+        tenantId: tenantId,
       );
-    } catch (_) {
+
+      return ok(session);
+    } catch (e) {
+      developer.log('❌ Erro ao obter sessão: $e', name: 'AuthRepository');
       return err(const UnauthorizedFailure());
     }
   }
@@ -110,22 +124,59 @@ class AuthRepositoryImpl implements AuthRepository {
 
     final payload = _decodeJwt(tokens.accessToken);
     if (payload != null) {
+      final roleIdNum = _extractRoleIdNum(payload);
+
+      if (roleIdNum == null) {
+        await _secureStorage.clearTokens();
+        return;
+      }
+
+      final role = UserRole.fromRoleIdNum(roleIdNum);
+
       await _secureStorage.saveUserInfo(
         userId: payload['sub'] as String? ?? '',
-        role: payload['role'] as String? ?? 'CLIENT',
+        role: role.label,
       );
+
+      if (roleIdNum == UserRole.owner.roleIdNum) {
+        final tenantId = await _datasource.getMyTenantId(tokens.accessToken);
+        if (tenantId != null) {
+          await _secureStorage.saveTenantId(tenantId);
+        } else {
+          await _secureStorage.clearTokens();
+          return; // ver se isso nao quebra
+        }
+      }
+    } else {
+      developer.log('⚠️ Falha ao salvar sessão', name: 'AuthRepository');
     }
+  }
+
+  int? _extractRoleIdNum(Map<String, dynamic> payload) {
+    var roleValue = payload['roles'];
+
+    if (roleValue is List && roleValue.isNotEmpty) {
+      roleValue = roleValue.first;
+    }
+
+    if (roleValue is int) {
+      return roleValue;
+    }
+    return null;
   }
 
   Map<String, dynamic>? _decodeJwt(String token) {
     try {
       final parts = token.split('.');
-      if (parts.length != 3) return null;
+      if (parts.length != 3) {
+        return null;
+      }
       final payload = parts[1];
       final normalized = base64Url.normalize(payload);
       final decoded = utf8.decode(base64Url.decode(normalized));
-      return jsonDecode(decoded) as Map<String, dynamic>;
-    } catch (_) {
+      final result = jsonDecode(decoded) as Map<String, dynamic>;
+      return result;
+    } catch (e) {
       return null;
     }
   }

@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -35,32 +36,46 @@ class _OwnerDashboardPageState extends State<OwnerDashboardPage> {
   }
 
   Future<void> _loadToday() async {
-    if (_tenantId == null) return;
+    if (_tenantId == null) {
+      setState(() => _loading = false);
+      return;
+    }
+
     setState(() => _loading = true);
-    final result = await context
-        .read<AppointmentRepository>()
-        .getDaySchedule(tenantId: _tenantId!, date: DateTime.now());
+    final result = await context.read<AppointmentRepository>().getDaySchedule(
+      tenantId: _tenantId!,
+      date: DateTime.now(),
+    );
     if (!mounted) return;
+
     result.fold(
-      (_) => setState(() => _loading = false),
-      (list) => setState(() {
-        _todayAppointments = list;
-        _loading = false;
-      }),
+      (error) {
+        setState(() => _loading = false);
+      },
+      (listAppointments) {
+        setState(() {
+          _todayAppointments = listAppointments;
+          _loading = false;
+        });
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat("EEEE, d 'de' MMMM", 'pt_BR');
-    final confirmed = _todayAppointments
+    final confirmed =
+        _todayAppointments
             ?.where((a) => a.status == AppointmentStatus.confirmed)
             .length ??
         0;
-    final revenue = _todayAppointments
-            ?.where((a) =>
-                a.status == AppointmentStatus.confirmed ||
-                a.status == AppointmentStatus.completed)
+    final revenue =
+        _todayAppointments
+            ?.where(
+              (a) =>
+                  a.status == AppointmentStatus.confirmed ||
+                  a.status == AppointmentStatus.completed,
+            )
             .fold(0.0, (sum, a) => sum + a.pricePaid) ??
         0.0;
 
@@ -156,16 +171,21 @@ class _OwnerDashboardPageState extends State<OwnerDashboardPage> {
                 const SizedBox(
                   height: 100,
                   child: Center(
-                    child: CircularProgressIndicator(color: AppColors.primaryContainer),
+                    child: CircularProgressIndicator(
+                      color: AppColors.primaryContainer,
+                    ),
                   ),
                 )
-              else if (_todayAppointments == null || _todayAppointments!.isEmpty)
+              else if (_todayAppointments == null ||
+                  _todayAppointments!.isEmpty)
                 const _EmptyToday()
               else
-                ..._todayAppointments!.map((a) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: _DayAppointmentTile(a),
-                    )),
+                ..._todayAppointments!.map(
+                  (a) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: _DayAppointmentTile(a),
+                  ),
+                ),
               const SizedBox(height: 40),
             ],
           ),
@@ -391,7 +411,11 @@ class _EmptyToday extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.calendar_today_outlined, size: 48, color: AppColors.onSurfaceVariant),
+            Icon(
+              Icons.calendar_today_outlined,
+              size: 48,
+              color: AppColors.onSurfaceVariant,
+            ),
             const SizedBox(height: 16),
             Text(
               'Nenhum agendamento para hoje.',

@@ -1,17 +1,23 @@
-enum UserRole { owner, professional, client }
+enum UserRole {
+  owner(2),
+  professional(4),
+  client(7);
 
-extension UserRoleExtension on UserRole {
-  static UserRole fromString(String value) => switch (value.toUpperCase()) {
-        'OWNER' => UserRole.owner,
-        'PROFESSIONAL' => UserRole.professional,
-        _ => UserRole.client,
-      };
+  final int roleIdNum;
+  const UserRole(this.roleIdNum);
+
+  static UserRole fromRoleIdNum(int? roleIdNum) => switch (roleIdNum) {
+    2 => UserRole.owner,
+    4 => UserRole.professional,
+    7 => UserRole.client,
+    _ => UserRole.client,
+  };
 
   String get label => switch (this) {
-        UserRole.owner => 'Proprietário',
-        UserRole.professional => 'Profissional',
-        UserRole.client => 'Cliente',
-      };
+    UserRole.owner => 'Proprietário',
+    UserRole.professional => 'Profissional',
+    UserRole.client => 'Cliente',
+  };
 }
 
 class UserSession {

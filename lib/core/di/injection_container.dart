@@ -42,20 +42,24 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => LoginUseCase(sl()));
   sl.registerLazySingleton(() => RegisterUseCase(sl()));
 
-  // Auth BLoC (as singleton to be accessible from interceptor)
-  sl.registerLazySingleton<AuthBloc>(() => AuthBloc(
-        authRepository: sl(),
-        loginUseCase: sl(),
-        registerUseCase: sl(),
-      ));
+  // Auth BLoC (é singleton para não perder a sessão)
+  sl.registerLazySingleton<AuthBloc>(
+    () => AuthBloc(
+      authRepository: sl(),
+      loginUseCase: sl(),
+      registerUseCase: sl(),
+    ),
+  );
 
   // Network
-  sl.registerLazySingleton<AuthInterceptor>(() => AuthInterceptor(
-        sl(),
-        onSessionExpired: () async {
-          sl<AuthBloc>().add(AuthLogoutRequested());
-        },
-      ));
+  sl.registerLazySingleton<AuthInterceptor>(
+    () => AuthInterceptor(
+      sl(),
+      onSessionExpired: () async {
+        sl<AuthBloc>().add(AuthLogoutRequested());
+      },
+    ),
+  );
   sl.registerLazySingleton<ApiClient>(() => ApiClient(authInterceptor: sl()));
   sl.registerLazySingleton<Dio>(() => sl<ApiClient>().dio);
 
@@ -63,9 +67,7 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<SalonRemoteDatasource>(
     () => SalonRemoteDatasourceImpl(sl()),
   );
-  sl.registerLazySingleton<SalonRepository>(
-    () => SalonRepositoryImpl(sl()),
-  );
+  sl.registerLazySingleton<SalonRepository>(() => SalonRepositoryImpl(sl()));
   sl.registerLazySingleton<AppointmentRepository>(
     () => AppointmentRepositoryImpl(sl()),
   );
@@ -75,8 +77,7 @@ Future<void> initDependencies() async {
 
   // Salon BLoCs
   sl.registerFactory<SalonListBloc>(() => SalonListBloc(sl()));
-  sl.registerFactory<BookingBloc>(() => BookingBloc(
-        salonRepository: sl(),
-        appointmentRepository: sl(),
-      ));
+  sl.registerFactory<BookingBloc>(
+    () => BookingBloc(salonRepository: sl(), appointmentRepository: sl()),
+  );
 }

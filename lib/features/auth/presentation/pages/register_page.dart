@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/constants/role_ids.dart';
 import '../../../../shared/widgets/app_button.dart';
 import '../../../../shared/widgets/app_snackbar.dart';
 import '../../../../shared/widgets/app_text_field.dart';
@@ -23,7 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _agreeTerms = false;
-  int _roleIdNum = 3;
+  int _roleIdNum = RoleIds.client;
 
   @override
   void dispose() {
@@ -112,12 +113,12 @@ class _RegisterPageState extends State<RegisterPage> {
                         children: [
                           Expanded(
                             child: GestureDetector(
-                              onTap: () => setState(() => _roleIdNum = 3),
+                              onTap: () => setState(() => _roleIdNum = RoleIds.client),
                               child: Container(
                                 padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
-                                  color: _roleIdNum == 3
+                                  color: _roleIdNum == RoleIds.client
                                       ? AppColors.primaryContainer
                                       : Colors.transparent,
                                 ),
@@ -127,7 +128,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   style: GoogleFonts.manrope(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
-                                    color: _roleIdNum == 3
+                                    color: _roleIdNum == RoleIds.client
                                         ? AppColors.onPrimary
                                         : AppColors.onSurfaceVariant,
                                   ),
@@ -137,12 +138,12 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                           Expanded(
                             child: GestureDetector(
-                              onTap: () => setState(() => _roleIdNum = 1),
+                              onTap: () => setState(() => _roleIdNum = RoleIds.owner),
                               child: Container(
                                 padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
-                                  color: _roleIdNum == 1
+                                  color: _roleIdNum == RoleIds.owner
                                       ? AppColors.primaryContainer
                                       : Colors.transparent,
                                 ),
@@ -152,7 +153,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   style: GoogleFonts.manrope(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
-                                    color: _roleIdNum == 1
+                                    color: _roleIdNum == RoleIds.owner
                                         ? AppColors.onPrimary
                                         : AppColors.onSurfaceVariant,
                                   ),
