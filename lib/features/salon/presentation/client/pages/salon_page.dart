@@ -70,187 +70,225 @@ class _SalonPageState extends State<SalonPage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.primaryContainer))
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: AppColors.primaryContainer,
+              ),
+            )
           : _error != null
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.error_outline, size: 48, color: AppColors.onSurfaceVariant),
-                      const SizedBox(height: 16),
-                      Text(_error!, style: TextStyle(color: AppColors.onSurfaceVariant)),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () => context.pop(),
-                        child: const Text('Voltar'),
-                      ),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 48,
+                    color: AppColors.onSurfaceVariant,
                   ),
-                )
-              : CustomScrollView(
-                  slivers: [
-                    SliverAppBar(
-                      expandedHeight: 240,
-                      floating: true,
-                      pinned: true,
-                      backgroundColor: AppColors.background,
-                      leading: IconButton(
-                        icon: Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.surfaceContainerHigh.withValues(alpha: 0.9),
-                          ),
-                          child: Icon(Icons.arrow_back, color: AppColors.onSurface),
-                        ),
-                        onPressed: () => context.pop(),
-                      ),
-                      flexibleSpace: FlexibleSpaceBar(
-                        background: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            Container(
-                              color: AppColors.surfaceContainer,
-                              child: Icon(Icons.image, size: 80, color: AppColors.onSurfaceVariant),
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [Colors.transparent, AppColors.background.withValues(alpha: 0.8)],
-                                  ),
-                                ),
-                                height: 120,
-                              ),
-                            ),
-                          ],
+                  const SizedBox(height: 16),
+                  Text(
+                    _error!,
+                    style: TextStyle(color: AppColors.onSurfaceVariant),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => context.pop(),
+                    child: const Text('Voltar'),
+                  ),
+                ],
+              ),
+            )
+          : CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  expandedHeight: 240,
+                  floating: true,
+                  pinned: true,
+                  backgroundColor: AppColors.background,
+                  leading: IconButton(
+                    icon: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.surfaceContainerHigh.withValues(
+                          alpha: 0.9,
                         ),
                       ),
+                      child: Icon(Icons.arrow_back, color: AppColors.onSurface),
                     ),
-                    if (_salon != null)
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _salon!.name,
-                                style: GoogleFonts.manrope(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.onSurface,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Icon(Icons.location_on, size: 16, color: AppColors.primaryContainer),
-                                  const SizedBox(width: 6),
-                                  Expanded(
-                                    child: Text(
-                                      _salon!.address.displayAddress,
-                                      style: TextStyle(
-                                        color: AppColors.onSurfaceVariant,
-                                        fontSize: 14,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
+                    onPressed: () => context.pop(),
+                  ),
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Container(
+                          color: AppColors.surfaceContainer,
+                          child: Icon(
+                            Icons.image,
+                            size: 80,
+                            color: AppColors.onSurfaceVariant,
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.transparent,
+                                  AppColors.background.withValues(alpha: 0.8),
                                 ],
                               ),
-                              const SizedBox(height: 16),
-                              if (_categories.length > 1)
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    children: _categories.map((cat) {
-                                      final isSelected = _selectedCategory == cat;
-                                      return Padding(
-                                        padding: const EdgeInsets.only(right: 12),
-                                        child: GestureDetector(
-                                          onTap: () => setState(() {
-                                            _selectedCategory = isSelected ? null : cat;
-                                          }),
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(20),
-                                              border: Border.all(
-                                                color: isSelected
-                                                    ? AppColors.primaryContainer
-                                                    : AppColors.outlineVariant,
-                                                width: isSelected ? 2 : 1,
-                                              ),
-                                              color: isSelected
-                                                  ? AppColors.primaryContainer.withValues(alpha: 0.1)
-                                                  : Colors.transparent,
-                                            ),
-                                            child: Text(
-                                              cat,
-                                              style: GoogleFonts.manrope(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w600,
-                                                color: isSelected
-                                                    ? AppColors.primaryContainer
-                                                    : AppColors.onSurfaceVariant,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }).toList(),
+                            ),
+                            height: 120,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                if (_salon != null)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 16,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _salon!.name,
+                            style: GoogleFonts.manrope(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.onSurface,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.location_on,
+                                size: 16,
+                                color: AppColors.primaryContainer,
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  _salon!.address.displayAddress,
+                                  style: TextStyle(
+                                    color: AppColors.onSurfaceVariant,
+                                    fontSize: 14,
                                   ),
-                                ),
-                              const SizedBox(height: 20),
-                              Text(
-                                'Serviços',
-                                style: GoogleFonts.manrope(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.onSurfaceVariant,
-                                  letterSpacing: 0.05,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                      ),
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            final service = _filteredServices[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 16),
-                              child: _ServiceCard(
-                                service: service,
-                                onTap: () {
-                                  if (_salon == null) return;
-                                  context.read<BookingBloc>().add(
-                                        BookingServiceSelected(
-                                          tenantId: _salon!.id,
-                                          service: service,
+                          const SizedBox(height: 16),
+                          if (_categories.length > 1)
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: _categories.map((cat) {
+                                  final isSelected = _selectedCategory == cat;
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 12),
+                                    child: GestureDetector(
+                                      onTap: () => setState(() {
+                                        _selectedCategory = isSelected
+                                            ? null
+                                            : cat;
+                                      }),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 4,
                                         ),
-                                      );
-                                  context.push('/client/booking');
-                                },
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                          border: Border.all(
+                                            color: isSelected
+                                                ? AppColors.primaryContainer
+                                                : AppColors.outlineVariant,
+                                            width: isSelected ? 2 : 1,
+                                          ),
+                                          color: isSelected
+                                              ? AppColors.primaryContainer
+                                                    .withValues(alpha: 0.1)
+                                              : Colors.transparent,
+                                        ),
+                                        child: Text(
+                                          cat,
+                                          style: GoogleFonts.manrope(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: isSelected
+                                                ? AppColors.primaryContainer
+                                                : AppColors.onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
                               ),
-                            );
-                          },
-                          childCount: _filteredServices.length,
-                        ),
+                            ),
+                        ],
                       ),
                     ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 80)),
-                  ],
+                  ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20, right: 20),
+                    child: Text(
+                      'Serviços',
+                      style: GoogleFonts.manrope(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.onSurfaceVariant,
+                        letterSpacing: 0.05,
+                      ),
+                    ),
+                  ),
                 ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final service = _filteredServices[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: _ServiceCard(
+                          service: service,
+                          onTap: () {
+                            if (_salon == null) return;
+                            context.read<BookingBloc>().add(
+                              BookingServiceSelected(
+                                tenantId: _salon!.id,
+                                service: service,
+                              ),
+                            );
+                            context.push('/client/booking');
+                          },
+                        ),
+                      );
+                    }, childCount: _filteredServices.length),
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }
@@ -287,7 +325,10 @@ class _ServiceCard extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.primaryContainer.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(6),
@@ -311,7 +352,10 @@ class _ServiceCard extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 service.formattedDuration,
-                style: TextStyle(color: AppColors.onSurfaceVariant, fontSize: 13),
+                style: TextStyle(
+                  color: AppColors.onSurfaceVariant,
+                  fontSize: 13,
+                ),
               ),
               const SizedBox(width: 20),
               Text(

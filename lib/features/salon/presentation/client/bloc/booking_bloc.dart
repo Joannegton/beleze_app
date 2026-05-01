@@ -33,7 +33,9 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     BookingServiceSelected event,
     Emitter<BookingState> emit,
   ) async {
-    final current = state as BookingInProgress? ?? BookingInProgress(tenantId: event.tenantId);
+    final current = state is BookingInProgress
+        ? state as BookingInProgress
+        : BookingInProgress(tenantId: event.tenantId);
     emit(current.copyWith(
       service: event.service,
       professional: null,
@@ -56,6 +58,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     BookingProfessionalSelected event,
     Emitter<BookingState> emit,
   ) async {
+    if (state is! BookingInProgress) return;
     final current = state as BookingInProgress;
     emit(current.copyWith(
       professional: event.professional,
@@ -69,6 +72,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     BookingDateSelected event,
     Emitter<BookingState> emit,
   ) async {
+    if (state is! BookingInProgress) return;
     final current = state as BookingInProgress;
     emit(current.copyWith(selectedDate: event.date, isLoadingSlots: true));
 
@@ -92,6 +96,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     BookingSlotSelected event,
     Emitter<BookingState> emit,
   ) {
+    if (state is! BookingInProgress) return Future.value();
     final current = state as BookingInProgress;
     emit(current.copyWith(selectedSlot: event.slot));
     return Future.value();
@@ -101,6 +106,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     BookingConfirmed event,
     Emitter<BookingState> emit,
   ) async {
+    if (state is! BookingInProgress) return;
     final current = state as BookingInProgress;
     emit(current.copyWith(isConfirming: true));
 
@@ -157,6 +163,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     BookingRescheduleConfirmed event,
     Emitter<BookingState> emit,
   ) async {
+    if (state is! BookingInProgress) return;
     final current = state as BookingInProgress;
     emit(current.copyWith(isConfirming: true));
 
