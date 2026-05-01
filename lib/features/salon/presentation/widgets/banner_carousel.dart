@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../../../core/theme/app_colors.dart';
 
@@ -16,15 +17,31 @@ class BannerCarousel extends StatefulWidget {
 class _BannerCarouselState extends State<BannerCarousel> {
   late PageController _pageController;
   int _currentIndex = 0;
+  late Timer _timer;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
+    _startAutoScroll();
+  }
+
+  void _startAutoScroll() {
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (_pageController.hasClients) {
+        final nextIndex = (_currentIndex + 1) % widget.banners.length;
+        _pageController.animateToPage(
+          nextIndex,
+          duration: const Duration(milliseconds: 800),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
   }
 
   @override
   void dispose() {
+    _timer.cancel();
     _pageController.dispose();
     super.dispose();
   }
@@ -42,15 +59,9 @@ class _BannerCarouselState extends State<BannerCarousel> {
             },
             itemCount: widget.banners.length,
             itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(
-                    widget.banners[index],
-                    fit: BoxFit.cover,
-                  ),
-                ),
+              return Image.asset(
+                widget.banners[index],
+                fit: BoxFit.cover,
               );
             },
           ),
